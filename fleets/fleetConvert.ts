@@ -1,12 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
+import countries from "i18n-iso-countries";
+import en from "i18n-iso-countries/langs/en.json";
+
+countries.registerLocale(en);
 
 const CSV_PATH = "./fleets/aircraft-database-complete-2025-08.csv";
 const JSON_PATH = "./fleets/fleets.json";
 
 interface AircraftRecord {
     icao24: string;
-    built: string;
     manufacturerName: string;
     model: string;
     owner: string;
@@ -14,6 +17,7 @@ interface AircraftRecord {
     selCal: string;
     serialNumber: string;
     typecode: string;
+    country: string;
 }
 
 function convertCsvToJson(): void {
@@ -45,7 +49,6 @@ function parseAircraftCsv(): AircraftRecord[] {
 
         const filtered: AircraftRecord = {
             icao24: row.icao24,
-            built: row.built,
             model: row.model,
             manufacturerName: row.manufacturerName,
             owner: row.owner,
@@ -53,6 +56,7 @@ function parseAircraftCsv(): AircraftRecord[] {
             selCal: row.selCal,
             serialNumber: row.serialNumber,
             typecode: row.typecode,
+            country: countries.getAlpha2Code(row.country, "en") || row.country,
         };
 
         items.push(filtered);
